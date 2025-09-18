@@ -14,9 +14,9 @@
 }
 
 .btn-custom-active {
-    background-color: #fce4e4 !important; /* 중요한 스타일 오버라이드 */
-    border-color: #fce4e4 !important;
-    color: #333 !important;
+    background-color: #fce4e4 t;
+    border-color: #fce4e4;
+    color: #333;
     font-weight: bold;
 }
 
