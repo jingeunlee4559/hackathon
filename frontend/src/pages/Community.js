@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Paginated from '../components/Paginated';
 import '../css/Community.css';
 import { Col, Container, Row } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
 
 const boardPostsData = [
     {
@@ -113,13 +114,19 @@ const boardPostsData = [
 
 const Community = () => {
     const [posts, setPosts] = useState([]);
+    const navigate = useNavigate();
 
     useEffect(() => {
         setPosts(boardPostsData);
     }, []);
 
-    const handlePostClick = (postId) => {
-        console.log(`게시글 ID ${postId}번 상세 페이지로 이동합니다.`);
+    const handlePostClick = (id) => {
+        try {
+            //await axios.get(`/api/board/${board_seq}`);
+            navigate(`/Community/${id}`);
+        } catch (error) {
+            console.error('조회수 증가 실패', error);
+        }
     };
 
     return (
