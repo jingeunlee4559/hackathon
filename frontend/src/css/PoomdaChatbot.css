@@ -1,0 +1,52 @@
+/* src/components/PoomdaChatbot.css */
+
+.chatbot-toggle-button {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    z-index: 1000;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background-color: #ff8c7a; /* config와 유사한 코랄 색상 */
+    border: none;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    transition: all 0.3s ease;
+}
+
+.chatbot-toggle-button:hover {
+    transform: scale(1.1);
+    background-color: #ff7561;
+}
+
+.chatbot-container {
+    position: fixed;
+    bottom: 100px; /* 버튼 바로 위에 위치 */
+    right: 30px;
+    z-index: 999;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    overflow: hidden; /* radius 적용을 위해 */
+}
+
+/* react-chatbot-kit 기본 스타일 일부 수정 */
+.react-chatbot-kit-chat-container {
+    width: 320px;
+    height: 450px;
+}
+
+.react-chatbot-kit-chat-header {
+    background-color: #ffb6c1; /* 헤더 색상 */
+    font-weight: bold;
+}
+
+.react-chatbot-kit-chat-bot-message {
+    justify-content: left;
+    width: fit-content;
+    max-width: 700px;
+    white-space: pre-line; /* 줄바꿈 허용 */
+}
