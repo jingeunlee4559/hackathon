@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import '../css/DetailPage.css';
-import { Row, Button, Col, Container } from 'react-bootstrap';
+import { Row, Button, Col, Container, Form } from 'react-bootstrap';
 import Swal from 'sweetalert2';
 import CommentForm from '../components/CommentForm';
 import CommentList from '../components/CommentList';
+import axios from '../axios';
 
 const boardPostsData = [
     {
@@ -65,11 +66,16 @@ const DetailPage = () => {
     const [postDetail, setPostDetail] = useState(null);
     const navigate = useNavigate();
     const [comments, setComments] = useState([]);
+    const [isEditing, setIsEditing] = useState(false);
+    const [editedTitle, setEditedTitle] = useState('');
+    const [editedContent, setEditedContent] = useState('');
+    const [selectedFile, setSelectedFile] = useState(null);
+    const [previewImage, setPreviewImage] = useState('');
 
     const addComment = (text) => {
         const newComment = {
             id: comments.length + 3,
-            author: '현재사용자',
+            author: '용감한 아빠',
             content: text,
             date: '2025-09-18',
         };
@@ -86,23 +92,97 @@ const DetailPage = () => {
         setComments(mockComments);
     }, [id]);
 
-    const deletePost = () => {
+    const handleEdit = () => {
+      setIsEditing(true);
+    };
+
+    const handleSave = async () => {
+      const formData = new FormData();
+      formData.append("board_title", editedTitle);
+      formData.append("board_content", editedContent);
+      if (selectedFile) {
+        formData.append("board_img", selectedFile);
+      }
+
+      try {
+        const response = await axios.put(`/api/board/${id}`, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
+        setIsEditing(false);
+        // 업데이트된 데이터를 상태에 반영
+        setPostDetail({
+          ...postDetail,
+          title: editedTitle,
+          content: editedContent,
+          img: response.data.imageUrl || postDetail.imageUrl
+        });
+        // 이미지가 변경된 경우, 미리보기 이미지를 업데이트
+        if (response.data.imageUrl) {
+          setPreviewImage(`/images/${response.data.imageUrl}?${new Date().getTime()}`);
+        }
         Swal.fire({
-            icon: 'warning',
-            title: '정말 삭제하시겠습니까?',
-            text: '삭제한 내용은 되돌릴 수 없습니다.',
+          icon: 'success',
+          text: '수정 성공!',
+          confirmButtonText: '확인'
+        });
+      } catch (error) {
+        console.error("게시글 수정 도중 오류 발생:", error);
+        Swal.fire({
+          icon: 'error',
+          text: '수정 도중 오류가 발생했습니다.',
+          confirmButtonText: '확인'
+        });
+      }
+    };
+
+    const handleFileChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setSelectedFile(file);
+            setPreviewImage(URL.createObjectURL(file));
+        }
+    };
+
+    const triggerFileInput = () => {
+        document.getElementById('imageInput').click();
+    };
+
+    const handleRemoveImage = () => {
+        setPreviewImage('');
+        setSelectedFile(null);
+    };
+
+    function deletepost() {
+        Swal.fire({
+            icon: 'question',
+            text: '정말 삭제하시겠습니까?',
             showCancelButton: true,
-            confirmButtonText: '네, 삭제할게요',
-            cancelButtonText: '아니요',
-        }).then((result) => {
+            confirmButtonText: '확인',
+            cancelButtonText: '취소',
+        }).then(async (result) => {
             if (result.isConfirmed) {
-                console.log(`ID ${id}번 게시글이 삭제되었습니다.`);
-                Swal.fire('삭제 완료!', '게시글이 성공적으로 삭제되었습니다.', 'success').then(() => {
-                    navigate('/community');
-                });
+                try {
+                    await axios.delete(`/api/board/${id}`);
+                    Swal.fire({
+                        icon: 'success',
+                        text: '삭제 성공!',
+                        confirmButtonText: '확인',
+                    }).then(() => {
+                        navigate('/Board');
+                    });
+                } catch (error) {
+                    console.error('게시글 삭제 도중 오류 발생:', error);
+                    Swal.fire({
+                        icon: 'error',
+                        text: '삭제 도중 오류가 발생했습니다.',
+                        confirmButtonText: '확인',
+                    });
+                }
             }
         });
-    };
+    }
 
     if (!postDetail) {
         return (
@@ -116,17 +196,56 @@ const DetailPage = () => {
         <>
             <Row className="mt-5 pt-5"></Row>
             <Container className="detail-container pt-5 mt-5">
-                {/* <Row className="button-group mb-4">
-                    <Col className="text-end">
-                        <Button onClick={() => navigate('/community')} variant="secondary" className="btn me-2">
-                            목록
+        {!isEditing && (
+                    <Row className="button-group">
+                        <Col>   
+                        {/* {postDetail?.editable && ( */}
+                            <Button onClick={handleEdit} variant='warning' className="btn me-2">
+                                수정
+                            </Button>
+                        {/* )} */}
+                            {/* <Button variant="warning" className="btn me-2"></Button> */}
+                        {/* {postDetail?.deletable && ( */}
+                            <Button onClick={deletepost} variant="danger" className="btn">
+                                삭제
+                            </Button>
+                        {/* )} */}
+                            
+                        </Col>
+                    </Row>
+                )}
+                      {isEditing ? (
+                    <div className="detail-content">
+                        <Form.Group controlId="formTitle" className="title">
+                            <Form.Label>제목</Form.Label>
+                            <Form.Control type="text" value={editedTitle} onChange={(e) => setEditedTitle(e.target.value)} placeholder="제목을 입력하세요" />
+                        </Form.Group>
+                        <Form.Group controlId="formContent" className="content">
+                            <Form.Label>내용</Form.Label>
+                            <Form.Control as="textarea" rows={10} value={editedContent} onChange={(e) => setEditedContent(e.target.value)} placeholder="내용을 입력하세요" />
+                        </Form.Group>
+                        <Form.Group controlId="formFile" className="file">
+                            <Form.Label>이미지 파일</Form.Label>
+                            <Button variant="primary" onClick={triggerFileInput} className="custom-select-button">
+                                이미지 선택
+                            </Button>
+                            <input id="imageInput" type="file" className="hidden-file-input" style={{ display: 'none' }} onChange={handleFileChange} />
+                            {previewImage && (
+                                <div className="image-preview">
+                                    <img src={previewImage} alt="미리보기" style={{ maxWidth: '100%', marginTop: '10px' }} />
+                                    <Button variant="danger" onClick={handleRemoveImage} style={{ marginTop: '10px' }}>
+                                        이미지 제거
+                                    </Button>
+                                </div>
+                            )}
+                        </Form.Group>
+                        {/* <Button variant="success" className="mt-3"> */}
+                        <Button onClick={handleSave} variant="success" style={{backgroundColor:"#ff8c7a"}} className="mt-3">
+                            저장
                         </Button>
-                        <Button onClick={deletePost} variant="danger" className="btn">
-                            삭제
-                        </Button>
-                    </Col>
-                </Row> */}
-
+                    </div>
+                           ) : (
+                    <>
                 <div className="detail-content">
                     <h3 className="detail-title">{postDetail.title}</h3>
                     <p className="detail-info">
@@ -158,6 +277,8 @@ const DetailPage = () => {
                 <Row>
                     <CommentList comments={comments} />
                 </Row>
+                </>
+                     )}
             </Container>
         </>
     );
