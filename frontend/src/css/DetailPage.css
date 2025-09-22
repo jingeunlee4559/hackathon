@@ -1,0 +1,119 @@
+/* 전체 컨테이너 */
+.detail-container {
+    max-width: 900px;
+    margin: 0 auto;
+    background-color: white;
+    padding: 40px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    border-radius: 12px;
+    border-top: 5px solid #ff8c7a;
+    position: relative;
+}
+
+/* 제목 */
+.detail-title {
+    font-size: 28px;
+    color: #222;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+/* 작성 정보 */
+.detail-info {
+    font-size: 14px;
+    color: #777;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+
+/* 내용 */
+.detail-text {
+    font-size: 17px;
+    line-height: 1.8;
+    color: #444;
+}
+
+/* 이미지 */
+.detail-content img {
+    border-radius: 8px;
+    display: block;
+    margin: 20px auto;
+    max-width: 100%;
+    height: auto;
+}
+
+/* 수정/삭제 버튼 그룹 */
+.button-group {
+    position: absolute;
+    top: -60px;
+    right: 0;
+    display: flex;
+    gap: 10px;
+}
+
+/* 폼 스타일 */
+.title label,
+.content label,
+.file label {
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.content textarea {
+    width: 100%;
+    min-height: 200px;
+    padding: 12px;
+    font-size: 15px;
+    border-radius: 6px;
+    border: 1px solid #ddd;
+    resize: vertical;
+}
+
+/* 파일 업로드 버튼 */
+.custom-select-button {
+    font-size: 14px;
+    margin-left: 1rem;
+}
+
+/* 이미지 미리보기 */
+.image-preview {
+    margin-top: 10px;
+    text-align: center;
+}
+
+.image-preview img {
+    max-width: 100%;
+    border-radius: 6px;
+    border: 1px solid #ddd;
+}
+
+/* 댓글 섹션 */
+#detail {
+    border-top: 2px solid lightgray;
+    padding-top: 20px;
+    margin-top: 40px;
+}
+
+#detail span {
+    font-weight: bold;
+}
+
+/* 반응형 */
+@media (max-width: 768px) {
+    .detail-container {
+        padding: 20px;
+    }
+
+    .button-group {
+        top: -60px;
+    }
+
+    .detail-title {
+        font-size: 22px;
+    }
+
+    .detail-text {
+        font-size: 15px;
+    }
+}

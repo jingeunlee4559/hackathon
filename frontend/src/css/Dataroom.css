@@ -1,0 +1,40 @@
+.custom-card {
+    border: none;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.custom-card-header {
+    background-color: #f3a9a9;
+    color: #4b4b4b;
+    font-weight: 700;
+}
+
+.custom-pagination .page-item .page-link {
+    color: #777;
+    border-color: #e0e0e0;
+}
+.custom-pagination .page-item.active .page-link {
+    background-color: #e77a7a;
+    border-color: #e77a7a;
+    color: white;
+}
+.custom-pagination .page-item .page-link:hover {
+    background-color: #f8f9fa;
+}
+.custom-pagination .page-item.active .page-link:hover {
+    background-color: #e77a7a;
+}
+
+.custom-search-btn {
+    background-color: #e77a7a;
+    border-color: #e77a7a;
+    color: white;
+}
+
+.custom-search-btn:hover,
+.custom-search-btn:active,
+.custom-search-btn:focus {
+    background-color: #c75d5d !important;
+    border-color: #c75d5d !important;
+    box-shadow: none !important;
+}
