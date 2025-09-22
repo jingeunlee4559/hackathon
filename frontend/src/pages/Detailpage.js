@@ -14,7 +14,7 @@ const boardPostsData = [
         date: '2025-09-18',
         views: 152,
         content: '안녕하세요, 정부에서 지원하는 한부모가족 지원금 신청 절차나 필요 서류에 대해 알고 싶어요. 혹시 경험 있으신 분 계시면 정보 좀 공유해주실 수 있을까요? 감사합니다!',
-        imageUrl: 'https://via.placeholder.com/800x400.png?text=게시글+이미지+1',
+        imageUrl: "/img/mainimg.png",
     },
     {
         id: 2,
@@ -33,7 +33,7 @@ const boardPostsData = [
         views: 95,
         content:
             '정부에서 운영하는 아이돌봄 서비스를 이용해 본 긍정적인 경험을 나누고 싶어요. 처음엔 걱정이 많았지만, 계속 일하는 데 큰 도움이 되었습니다. 이용을 고민하는 분들을 위해 몇 가지 팁을 남깁니다.',
-        imageUrl: 'https://via.placeholder.com/800x400.png?text=게시글+이미지+3',
+            imageUrl: "/img/mainimg.png",
     },
     {
         id: 4,

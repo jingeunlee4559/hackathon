@@ -1,5 +1,3 @@
-// src/components/chatbot/config.js
-
 import { createChatBotMessage } from 'react-chatbot-kit';
 
 const botName = '따뜻한 품이';
@@ -14,10 +12,10 @@ const config = {
     ],
     customStyles: {
         botMessageBox: {
-            backgroundColor: '#FFB6C1', // 연한 핑크
+            backgroundColor: '#FFB6C1', 
         },
         chatButton: {
-            backgroundColor: '#FF8C7A', // 연한 코랄
+            backgroundColor: '#FF8C7A', 
         },
     },
 };
