@@ -16,20 +16,20 @@ const cardData = [
         icon: BsCollection,
         title: '정보 자료실',
         text: '유용한 정보와 자료를 한눈에 확인하세요.',
-        link: '/resources',
+        link: '/Dataroom',
     },
 
     {
         icon: BsMap,
-        title: '지도',
+        title: '기관 찾기',
         text: '가장 가까운 지원 시설을찾습니다',
-        link: '/support',
+        link: '/Map',
     },
     {
         icon: BsRobot,
         title: '챗봇 상담',
         text: '궁금한 내용을 챗봇에게 바로 물어보세요.',
-        link: '/chatbot',
+        link: '/',
     },
 ];
 
