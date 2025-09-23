@@ -25,16 +25,15 @@
     background-color: #e77a7a;
 }
 
-.custom-search-btn {
-    background-color: #e77a7a;
-    border-color: #e77a7a;
-    color: white;
+
+.btn.btn-tag-active {
+    background-color: #e77a7a; 
+    border-color: #e77a7a;     
+    color: white;              
 }
 
-.custom-search-btn:hover,
-.custom-search-btn:active,
-.custom-search-btn:focus {
-    background-color: #c75d5d !important;
-    border-color: #c75d5d !important;
-    box-shadow: none !important;
+.btn.btn-tag-active:hover {
+    background-color: #d66a6a; 
+    border-color: #d66a6a;
+    color: white;
 }
