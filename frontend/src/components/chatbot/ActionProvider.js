@@ -7,6 +7,20 @@ class ActionProvider {
         this.createClientMessage = createClientMessage;
     }
 
+    // 일상 대화 감지
+    isCasualConversation(message) {
+        const casualKeywords = [
+            '안녕', '반가워', '좋은 하루', '오늘', '날씨', '기분',
+            '고마워', '감사', '잘 지내', '어때', '뭐해', '재미있',
+            '심심', '피곤', '배고파', '잠깐', '그냥', '음',
+            '아하', '오', '와', '헉', '어머', '진짜', '정말',
+            '농담', '웃기', '재밌', 'ㅋㅋ', 'ㅎㅎ', '하하'
+        ];
+
+        const lowerMessage = message.toLowerCase();
+        return casualKeywords.some(keyword => lowerMessage.includes(keyword));
+    }
+
     // 상세 정보 요청 키워드 체크 (페이지 유도용)
     isDetailedPolicyInquiry(message) {
         const detailKeywords = [
@@ -36,6 +50,12 @@ class ActionProvider {
             // 상세 정책 정보 요청인지 먼저 체크
             if (this.isDetailedPolicyInquiry(message)) {
                 this.handlePolicyInquiry(message);
+                return;
+            }
+
+            // 일상 대화인지 체크
+            if (this.isCasualConversation(message)) {
+                this.handleCasualConversation(message);
                 return;
             }
 
@@ -110,6 +130,36 @@ class ActionProvider {
                 };
             });
         }
+    }
+
+    // 일상 대화 처리
+    handleCasualConversation(message) {
+        const lowerMessage = message.toLowerCase();
+        let response = '';
+
+        if (lowerMessage.includes('안녕') || lowerMessage.includes('반가')) {
+            response = '안녕하세요! 만나서 반가워요 😊 오늘 하루는 어떻게 보내고 계세요?';
+        } else if (lowerMessage.includes('고마') || lowerMessage.includes('감사')) {
+            response = '별 말씀을요! 도움이 되어서 정말 기뻐요 🥰 언제든 필요하시면 말씀해주세요!';
+        } else if (lowerMessage.includes('기분') || lowerMessage.includes('오늘')) {
+            response = '오늘 하루 어떠셨어요? 좋은 일이 있으셨길 바라요 ✨ 혹시 힘든 일이 있으시다면 언제든 이야기해주세요!';
+        } else if (lowerMessage.includes('날씨')) {
+            response = '날씨 이야기를 하시는군요! 😌 날씨가 좋으면 기분도 좋아지는 것 같아요. 오늘 바깥 날씨는 어떤가요?';
+        } else if (lowerMessage.includes('피곤') || lowerMessage.includes('힘들')) {
+            response = '많이 피곤하시겠어요 😔 하루하루가 쉽지 않으시겠지만, 충분히 잘 하고 계세요. 잠시 쉬어가도 괜찮아요!';
+        } else if (lowerMessage.includes('심심') || lowerMessage.includes('뭐해')) {
+            response = '심심하시는군요! 😄 저와 이야기하며 시간을 보내셔도 좋고, 궁금한 것이 있으시면 언제든 물어보세요!';
+        } else if (lowerMessage.includes('ㅋㅋ') || lowerMessage.includes('ㅎㅎ') || lowerMessage.includes('하하')) {
+            response = '웃음소리가 들리니까 저도 기분이 좋아지네요! 😆 웃음은 정말 좋은 에너지를 주는 것 같아요!';
+        } else if (lowerMessage.includes('잘 지내') || lowerMessage.includes('어때')) {
+            response = '저는 덕분에 잘 지내고 있어요! 😊 더 중요한 건 어떻게 지내고 계신지인데요. 요즘은 어떠세요?';
+        } else {
+            // 기본 일상 대화 응답
+            response = '네, 그렇군요! 😊 편안하게 이야기 나누고 있어서 좋아요. 혹시 다른 궁금한 것이 있으시거나 도움이 필요한 일이 있으시면 언제든 말씀해주세요!';
+        }
+
+        const responseMessage = this.createChatBotMessage(response);
+        this.updateChatbotState(responseMessage);
     }
 
     // 정책 상세 문의 처리
