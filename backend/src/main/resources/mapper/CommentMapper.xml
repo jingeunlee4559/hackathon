@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.backend.mapper.CommentMapper">
+
+    <select id="findByCommunityId" parameterType="Integer" resultType="com.example.backend.model.Comment">
+        SELECT comment_id, community_id, content, comments_writer, comment_created_at, comment_updated_at
+        FROM comment
+        WHERE community_id = #{communityId}
+        ORDER BY comment_created_at DESC
+    </select>
+
+    <insert id="insertComment" parameterType="com.example.backend.model.Comment">
+        INSERT INTO comment (community_id, content, comments_writer, comment_created_at, comment_updated_at)
+        VALUES (#{communityId}, #{content}, #{commentsWriter}, NOW(), NOW())
+    </insert>
+
+    <update id="updateComment" parameterType="com.example.backend.model.Comment">
+        UPDATE comment
+        SET content = #{content}, comment_updated_at = NOW()
+        WHERE comment_id = #{commentId}
+    </update>
+
+    <delete id="deleteComment" parameterType="Integer">
+        DELETE FROM comment WHERE comment_id = #{commentId}
+    </delete>
+
+</mapper>

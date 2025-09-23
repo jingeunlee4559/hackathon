@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.backend.mapper.TagMapper">
+  <select id="findAll" resultType="com.example.backend.model.Tag">
+    SELECT tag_id AS tagId, tag_name AS tagName
+    FROM tag ORDER BY tag_name
+  </select>
+
+  <select id="findByName" resultType="com.example.backend.model.Tag">
+    SELECT tag_id AS tagId, tag_name AS tagName
+    FROM tag WHERE tag_name = #{name}
+  </select>
+
+  <insert id="insert" parameterType="com.example.backend.model.Tag" useGeneratedKeys="true" keyProperty="tagId">
+    INSERT INTO tag(tag_name) VALUES(#{tagName})
+  </insert>
+</mapper>

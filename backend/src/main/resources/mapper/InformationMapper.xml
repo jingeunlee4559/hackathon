@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.backend.mapper.InformationMapper">
+
+  <resultMap id="InformationMap" type="com.example.backend.model.Information">
+    <id     property="informationId"    column="information_id"/>
+    <result property="informationTitle" column="information_title"/>
+    <result property="informationContent" column="information_content"/>
+    <result property="startDay"         column="start_day"/>
+    <result property="endDay"           column="end_day"/>
+    <result property="imageUrl"         column="image_url"/>
+    <result property="linkUrl"          column="link_url"/>
+  </resultMap>
+
+  <sql id="BaseSelect">
+    <!-- tagIds 길이를 안전하게 변수로 바인딩 -->
+    <bind name="tagCount" value="tagIds == null ? 0 : tagIds.size()" />
+
+    SELECT i.information_id, i.information_title, i.information_content,
+           i.start_day, i.end_day, i.image_url, i.link_url
+    FROM information i
+    <if test="tagIds != null and tagIds.size() > 0">
+      JOIN information_tag it ON it.information_id = i.information_id
+    </if>
+    <where>
+      <if test="query != null and query != ''">
+        (i.information_title LIKE CONCAT('%', #{query}, '%')
+         OR i.information_content LIKE CONCAT('%', #{query}, '%'))
+      </if>
+      <if test="tagIds != null and tagIds.size() > 0">
+        AND it.tag_id IN
+        <foreach collection="tagIds" item="id" open="(" separator="," close=")">
+          #{id}
+        </foreach>
+      </if>
+    </where>
+    <if test="tagIds != null and tagIds.size() > 0">
+      GROUP BY i.information_id
+      HAVING COUNT(DISTINCT it.tag_id) = #{tagCount}
+    </if>
+  </sql>
+
+  <select id="findPolicies" resultMap="InformationMap">
+    <include refid="BaseSelect"/>
+    <choose>
+      <when test="sort == 'old'"> ORDER BY i.information_id ASC </when>
+      <otherwise> ORDER BY i.information_id DESC </otherwise>
+    </choose>
+    LIMIT #{size} OFFSET #{offset}
+  </select>
+
+  <select id="countPolicies" resultType="long">
+    SELECT COUNT(*) FROM (
+      <include refid="BaseSelect"/>
+    ) X
+  </select>
+
+  <select id="findTagsByInformationId" resultType="com.example.backend.model.Tag">
+    SELECT t.tag_id AS tagId, t.tag_name AS tagName
+    FROM information_tag it
+    JOIN tag t ON t.tag_id = it.tag_id
+    WHERE it.information_id = #{informationId}
+    ORDER BY t.tag_name
+  </select>
+
+  <select id="findTagIdsByNames" resultType="com.example.backend.model.Tag">
+    SELECT tag_id AS tagId, tag_name AS tagName
+    FROM tag
+    WHERE tag_name IN
+    <foreach collection="names" item="nm" open="(" separator="," close=")">
+      #{nm}
+    </foreach>
+  </select>
+
+  <!-- 관리자 CRUD -->
+  <insert id="insertInformation" parameterType="com.example.backend.model.Information" useGeneratedKeys="true" keyProperty="informationId">
+    INSERT INTO information(information_title, information_content, start_day, end_day, image_url, link_url)
+    VALUES(#{informationTitle}, #{informationContent}, #{startDay}, #{endDay}, #{imageUrl}, #{linkUrl})
+  </insert>
+
+  <update id="updateInformation" parameterType="com.example.backend.model.Information">
+    UPDATE information
+      SET information_title=#{informationTitle},
+          information_content=#{informationContent},
+          start_day=#{startDay},
+          end_day=#{endDay},
+          image_url=#{imageUrl},
+          link_url=#{linkUrl}
+    WHERE information_id=#{informationId}
+  </update>
+
+  <delete id="deleteInformation">
+    DELETE FROM information WHERE information_id=#{id}
+  </delete>
+
+  <insert id="insertInformationTag">
+    INSERT INTO information_tag(information_id, tag_id)
+    VALUES(#{informationId}, #{tagId})
+  </insert>
+
+  <delete id="deleteInformationTags">
+    DELETE FROM information_tag WHERE information_id=#{informationId}
+  </delete>
+
+</mapper>
