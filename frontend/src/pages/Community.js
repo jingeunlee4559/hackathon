@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Paginated from '../components/Paginated';
 import '../css/Community.css';
-import { Col, Container, Row } from 'react-bootstrap';
+import { Button, Col, Container, Row } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 
 const boardPostsData = [
@@ -136,6 +136,13 @@ const Community = () => {
                 <Row className="my-5">
                     <Col className="d-flex justify-content-left">
                         <h3 style={{ fontWeight: 'bold' }}>커뮤니티</h3>
+                    </Col>
+                </Row>
+                <Row className='my-4' >
+                    <Col xs={12} className="d-flex justify-content-end">
+                        <Button id="write-button" variant="primary" onClick={() => navigate('/writePost')}>
+                            글쓰기
+                        </Button>
                     </Col>
                 </Row>
                 <Paginated

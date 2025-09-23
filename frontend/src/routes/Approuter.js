@@ -7,6 +7,7 @@ import Community from '../pages/Community';
 import Dataroom from '../pages/Dataroom';
 import Map from '../pages/Map';
 import DetailPage from '../pages/Detailpage';
+import WritePost from '../pages/WritePost';
 
 const Approuter = () => {
     return (
@@ -18,6 +19,7 @@ const Approuter = () => {
                 <Route path="/Community/:id" element={<DetailPage />} />
                 <Route path="/Dataroom" element={<Dataroom />} />
                 <Route path="/Map" element={<Map />} />
+                <Route path="/WritePost" element={<WritePost/>}/>
             </Route>
         </Routes>
     );
