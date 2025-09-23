@@ -4,7 +4,13 @@
 <mapper namespace="com.example.backend.mapper.CommentMapper">
 
     <select id="findByCommunityId" parameterType="Integer" resultType="com.example.backend.model.Comment">
-        SELECT comment_id, community_id, content, comments_writer, comment_created_at, comment_updated_at
+        SELECT
+            comment_id as commentId,
+            community_id as communityId,
+            content,
+            comments_writer as commentsWriter,
+            comment_created_at as commentCreatedAt,
+            comment_updated_at as commentUpdatedAt
         FROM comment
         WHERE community_id = #{communityId}
         ORDER BY comment_created_at DESC

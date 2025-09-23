@@ -5,7 +5,14 @@
 
 
     <select id="communityList" resultType="com.example.backend.model.Community">
-        SELECT community_id, title, content, writer, view_count, created_at, updated_at
+        SELECT
+            community_id as communityId,
+            title,
+            content,
+            writer,
+            view_count as viewCount,
+            created_at as createdAt,
+            updated_at as updatedAt
         FROM community
         ORDER BY created_at DESC
     </select>
@@ -20,7 +27,14 @@
     </delete>
 
     <select id="selectOne" parameterType="int" resultType="com.example.backend.model.Community">
-        SELECT community_id, title, content, writer, view_count, created_at, updated_at
+        SELECT
+            community_id as communityId,
+            title,
+            content,
+            writer,
+            view_count as viewCount,
+            created_at as createdAt,
+            updated_at as updatedAt
         FROM community
         WHERE community_id = #{communityId}
     </select>

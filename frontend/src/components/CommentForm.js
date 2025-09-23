@@ -4,29 +4,42 @@ import '../css/Comment.css';
 
 const CommentForm = ({ onSubmit }) => {
     const [commentText, setCommentText] = useState('');
+    const [author, setAuthor] = useState('');
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        if (!commentText.trim()) return;
-        onSubmit(commentText);
+        if (!commentText.trim() || !author.trim()) return;
+        onSubmit(commentText, author);
         setCommentText('');
+        setAuthor('');
     };
 
     return (
-        <Card className="comment-form-card shadow-sm">
+        <Card className="comment-form-card">
             <Card.Body>
-                <Form className="my-3 d-flex" onSubmit={handleSubmit} style={{ width: '100%' }}>
-                    <FormControl
-                        as="textarea"
-                        placeholder="댓글을 입력해주세요"
-                        className="flex-grow-1 mr-2"
-                        value={commentText}
-                        onChange={(e) => setCommentText(e.target.value)}
-                        style={{ resize: 'none' }}
-                    />
-                    <Button type="submit" id="submitCommentButton">
-                        등록
-                    </Button>
+                <Form onSubmit={handleSubmit}>
+                    <div className="author-input">
+                        <FormControl
+                            type="text"
+                            placeholder="✏️ 작성자명을 입력해주세요"
+                            value={author}
+                            onChange={(e) => setAuthor(e.target.value)}
+                            required
+                        />
+                    </div>
+                    <div className="comment-input-section">
+                        <FormControl
+                            as="textarea"
+                            placeholder="💬 댓글을 입력해주세요..."
+                            className="comment-textarea"
+                            value={commentText}
+                            onChange={(e) => setCommentText(e.target.value)}
+                            required
+                        />
+                        <Button type="submit" id="submitCommentButton">
+                            💌<br/>등록
+                        </Button>
+                    </div>
                 </Form>
             </Card.Body>
         </Card>

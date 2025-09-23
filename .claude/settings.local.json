@@ -3,7 +3,9 @@
     "allow": [
       "Bash(gradle:*)",
       "Bash(./gradlew:*)",
-      "mcp__ide__getDiagnostics"
+      "mcp__ide__getDiagnostics",
+      "Bash(mkdir:*)",
+      "Bash(touch:*)"
     ],
     "deny": [],
     "ask": []

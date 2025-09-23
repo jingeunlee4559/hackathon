@@ -72,24 +72,77 @@ const DetailPage = () => {
     const [selectedFile, setSelectedFile] = useState(null);
     const [previewImage, setPreviewImage] = useState('');
 
-    const addComment = (text) => {
-        const newComment = {
-            id: comments.length + 3,
-            author: '용감한 아빠',
-            content: text,
-            date: '2025-09-18',
-        };
-        setComments([newComment, ...comments]);
+    const addComment = async (text, author) => {
+        try {
+            const newComment = {
+                communityId: parseInt(id),
+                content: text,
+                commentsWriter: author
+            };
+
+            await axios.post('/api/comments', newComment);
+            // 댓글 추가 후 댓글 목록 다시 불러오기
+            fetchComments();
+
+            Swal.fire({
+                icon: 'success',
+                text: '댓글이 성공적으로 등록되었습니다.',
+                confirmButtonText: '확인',
+                timer: 2000
+            });
+        } catch (error) {
+            console.error('댓글 등록 오류:', error);
+            Swal.fire({
+                icon: 'error',
+                text: '댓글 등록 중 오류가 발생했습니다.',
+                confirmButtonText: '확인'
+            });
+        }
+    };
+
+    const fetchComments = async () => {
+        try {
+            const response = await axios.get(`/api/comments/community/${id}`);
+            console.log('댓글 데이터:', response.data); // 디버깅용
+            setComments(response.data);
+        } catch (error) {
+            console.error('댓글 조회 오류:', error);
+            // 오류 시 빈 배열로 설정
+            setComments([]);
+        }
+    };
+
+    const fetchPostDetail = async () => {
+        try {
+            console.log('게시글 상세 정보 요청:', id);
+            const response = await axios.get(`/api/community/${id}`);
+            console.log('받은 게시글 상세 데이터:', response.data);
+
+            const post = response.data;
+            setPostDetail(post);
+            setEditedTitle(post.title);
+            setEditedContent(post.content);
+            if (post.imageUrl) {
+                setPreviewImage(post.imageUrl);
+            }
+        } catch (error) {
+            console.error('게시글 상세 정보 조회 오류:', error);
+            // 오류 시 더미 데이터에서 찾기
+            const post = boardPostsData.find((p) => p.id === parseInt(id));
+            if (post) {
+                setPostDetail(post);
+                setEditedTitle(post.title);
+                setEditedContent(post.content);
+                if (post.imageUrl) {
+                    setPreviewImage(post.imageUrl);
+                }
+            }
+        }
     };
 
     useEffect(() => {
-        const post = boardPostsData.find((p) => p.id === parseInt(id));
-
-        if (post) {
-            setPostDetail(post);
-        }
-
-        setComments(mockComments);
+        fetchPostDetail();
+        fetchComments();
     }, [id]);
 
     const handleEdit = () => {
@@ -97,44 +150,37 @@ const DetailPage = () => {
     };
 
     const handleSave = async () => {
-      const formData = new FormData();
-      formData.append("board_title", editedTitle);
-      formData.append("board_content", editedContent);
-      if (selectedFile) {
-        formData.append("board_img", selectedFile);
-      }
+        const updateData = {
+            title: editedTitle,
+            content: editedContent
+        };
 
-      try {
-        const response = await axios.put(`/api/board/${id}`, formData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        });
-        setIsEditing(false);
-        // 업데이트된 데이터를 상태에 반영
-        setPostDetail({
-          ...postDetail,
-          title: editedTitle,
-          content: editedContent,
-          img: response.data.imageUrl || postDetail.imageUrl
-        });
-        // 이미지가 변경된 경우, 미리보기 이미지를 업데이트
-        if (response.data.imageUrl) {
-          setPreviewImage(`/images/${response.data.imageUrl}?${new Date().getTime()}`);
+        try {
+            const response = await axios.put(`/api/community/${id}`, updateData, {
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
+            setIsEditing(false);
+            // 업데이트된 데이터를 상태에 반영
+            setPostDetail({
+                ...postDetail,
+                title: editedTitle,
+                content: editedContent
+            });
+            Swal.fire({
+                icon: 'success',
+                text: '수정 성공!',
+                confirmButtonText: '확인'
+            });
+        } catch (error) {
+            console.error("게시글 수정 도중 오류 발생:", error);
+            Swal.fire({
+                icon: 'error',
+                text: '수정 도중 오류가 발생했습니다.',
+                confirmButtonText: '확인'
+            });
         }
-        Swal.fire({
-          icon: 'success',
-          text: '수정 성공!',
-          confirmButtonText: '확인'
-        });
-      } catch (error) {
-        console.error("게시글 수정 도중 오류 발생:", error);
-        Swal.fire({
-          icon: 'error',
-          text: '수정 도중 오류가 발생했습니다.',
-          confirmButtonText: '확인'
-        });
-      }
     };
 
     const handleFileChange = (e) => {
@@ -164,13 +210,13 @@ const DetailPage = () => {
         }).then(async (result) => {
             if (result.isConfirmed) {
                 try {
-                    await axios.delete(`/api/board/${id}`);
+                    await axios.delete(`/api/community/${id}`);
                     Swal.fire({
                         icon: 'success',
                         text: '삭제 성공!',
                         confirmButtonText: '확인',
                     }).then(() => {
-                        navigate('/Board');
+                        navigate('/Community');
                     });
                 } catch (error) {
                     console.error('게시글 삭제 도중 오류 발생:', error);
@@ -249,7 +295,9 @@ const DetailPage = () => {
                 <div className="detail-content">
                     <h3 className="detail-title">{postDetail.title}</h3>
                     <p className="detail-info">
-                        작성자: {postDetail.author} | 날짜: {postDetail.date} | 조회수: {postDetail.views}
+                        작성자: {postDetail.writer || postDetail.author} |
+                        날짜: {postDetail.createdAt ? new Date(postDetail.createdAt).toLocaleDateString() : postDetail.date} |
+                        조회수: {postDetail.viewCount || postDetail.views || 0}
                     </p>
                     <hr />
 

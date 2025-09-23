@@ -27,8 +27,16 @@ public class CommunityController {
 	// 게시글 작성
 	@PostMapping
 	public ResponseEntity<String> insert(@RequestBody Community vo){
-		service.insertCommunity(vo);
-		return ResponseEntity.ok("게시글이 성공적으로 등록되었습니다.");
+		try {
+			System.out.println("받은 게시글 데이터: " + vo.toString());
+			service.insertCommunity(vo);
+			System.out.println("게시글 저장 완료");
+			return ResponseEntity.ok("게시글이 성공적으로 등록되었습니다.");
+		} catch (Exception e) {
+			System.err.println("게시글 저장 중 오류: " + e.getMessage());
+			e.printStackTrace();
+			return ResponseEntity.status(500).body("게시글 저장 중 오류가 발생했습니다: " + e.getMessage());
+		}
 	}
 
 	// 게시글 삭제

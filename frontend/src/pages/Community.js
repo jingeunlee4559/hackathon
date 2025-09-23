@@ -3,6 +3,7 @@ import Paginated from '../components/Paginated';
 import '../css/Community.css';
 import { Button, Col, Container, Row } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
+import axios from '../axios';
 
 const boardPostsData = [
     {
@@ -114,18 +115,34 @@ const boardPostsData = [
 
 const Community = () => {
     const [posts, setPosts] = useState([]);
+    const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
 
+    const fetchPosts = async () => {
+        try {
+            console.log('게시글 목록 요청 중...');
+            const response = await axios.get('/api/community');
+            console.log('받은 게시글 데이터:', response.data);
+            setPosts(response.data);
+        } catch (error) {
+            console.error('게시글 목록 조회 오류:', error);
+            // 오류 시 빈 배열로 설정
+            setPosts([]);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     useEffect(() => {
-        setPosts(boardPostsData);
+        fetchPosts();
     }, []);
 
     const handlePostClick = (id) => {
         try {
-            //await axios.get(`/api/board/${board_seq}`);
+            console.log('게시글 클릭:', id);
             navigate(`/Community/${id}`);
         } catch (error) {
-            console.error('조회수 증가 실패', error);
+            console.error('페이지 이동 실패', error);
         }
     };
 
@@ -145,32 +162,38 @@ const Community = () => {
                         </Button>
                     </Col>
                 </Row>
-                <Paginated
-                    data={posts.map((post, index) => ({
-                        index: index + 1,
-                        id: post.id,
-                        title: post.title,
-                        author: post.author,
-                        date: post.date,
-                        views: post.views,
-                    }))}
-                    columns={[
-                        { accessorKey: 'index', header: '순서', size: 60 },
-                        {
-                            accessorKey: 'title',
-                            header: '제목',
-                            size: 500,
-                            cell: (info) => (
-                                <span onClick={() => handlePostClick(info.row.original.id)} style={{ cursor: 'pointer', color: '#0056b3' }}>
-                                    {info.getValue()}
-                                </span>
-                            ),
-                        },
-                        { accessorKey: 'author', header: '작성자', size: 120 },
-                        { accessorKey: 'date', header: '날짜', size: 150 },
-                        { accessorKey: 'views', header: '조회', size: 80 },
-                    ]}
-                />
+                {loading ? (
+                    <div style={{ textAlign: 'center', padding: '50px' }}>
+                        게시글을 불러오는 중...
+                    </div>
+                ) : (
+                    <Paginated
+                        data={posts.map((post, index) => ({
+                            index: index + 1,
+                            id: post.communityId || post.id,
+                            title: post.title,
+                            author: post.writer || post.author,
+                            date: post.createdAt ? new Date(post.createdAt).toLocaleDateString() : post.date,
+                            views: post.viewCount || post.views || 0,
+                        }))}
+                        columns={[
+                            { accessorKey: 'index', header: '순서', size: 60 },
+                            {
+                                accessorKey: 'title',
+                                header: '제목',
+                                size: 500,
+                                cell: (info) => (
+                                    <span onClick={() => handlePostClick(info.row.original.id)} style={{ cursor: 'pointer', color: '#0056b3' }}>
+                                        {info.getValue()}
+                                    </span>
+                                ),
+                            },
+                            { accessorKey: 'author', header: '작성자', size: 120 },
+                            { accessorKey: 'date', header: '날짜', size: 150 },
+                            { accessorKey: 'views', header: '조회', size: 80 },
+                        ]}
+                    />
+                )}
             </Container>
         </>
     );
